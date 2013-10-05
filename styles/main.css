@@ -1,0 +1,17 @@
+body {
+    height: 100%;
+}
+
+.nodes {
+    height: 100%;
+    width: 100%;
+    background-color: #eee;
+    float: left;
+}
+
+.infobox {
+    height: 200px;
+    width: 300px;
+    background-color: #ddd;
+    float: right;
+}
