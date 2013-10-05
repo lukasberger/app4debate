@@ -11,7 +11,7 @@ var NODE_DISAGREE_BACKGROUND  = "#e74c3c";
 var NODE_DISAGREE_BORDER      = "#c0392b";
 
 var NODE_WIDTH  = 300;
-var NODE_HEIGHT = 90;
+var NODE_HEIGHT = 110;
 
 var NODE_TEXT_WIDTH = 35;
 
@@ -43,9 +43,13 @@ var node = {
         status = status === null ? 1 : status; // if status was not provided set status to 1
         var colors = this.getColorByStatus(status);
 
+        // --- Node ---
+
         var n = r.rect(x, y, NODE_WIDTH, NODE_HEIGHT, 5); // create the node
         n.attr("fill",  colors["background"]); // node background color
         n.attr("stroke",  colors["border"]);   // node border color
+
+        // --- Text ---
 
         var text_wrapped = ""; // the text wrapped at TEXT_WIDTH characters
         var inword;  // is the pointer inside a word
@@ -62,14 +66,54 @@ var node = {
             }
         }
 
-        var t = r.text(x+25, y + NODE_HEIGHT / 2, text_wrapped); // create the text element
-        t.attr("font-size", 14);
-        t.attr("font-family", "Lato");
-        t.attr("text-anchor", "start");
-        t.attr("fill", "#ffffff");
+        var t = r.text(x+25, y + (NODE_HEIGHT - 20) / 2, text_wrapped); // create the text element
+        t.attr("font-size", 14);        // set text size
+        t.attr("font-family", "Lato");  // set font
+        t.attr("text-anchor", "start"); // set the anchor
+        t.attr("fill", "#ffffff");      // set text color
+
+        // --- Buttons ---
+         
+        var button_x = x + NODE_WIDTH - 35;
+        var button_y = y + NODE_HEIGHT - 35;
+
+        var accept_background = r.rect(0,0,30,30);
+        accept_background.attr("fill", "rgba(0,0,0,0)");     // fill color of the check mark
+        accept_background.attr("stroke", "rgba(0,0,0,0)");     // fill color of the check mark
+        accept_background.attr("cursor", "pointer");   // change the cursor while hovering
+        accept_background.translate(button_x - 30, button_y);
+
+        var accept = r.path("M2.379,14.729 5.208,11.899 12.958,19.648" +
+            " 25.877,6.733 28.707,9.561 12.958,25.308z"); // draws a check mark
+        accept.attr("fill", "#ffffff");     // fill color of the check mark
+        accept.attr("stroke", "#ffffff");   // border color of the check mark
+        accept.attr("cursor", "pointer");   // change the cursor while hovering
+        accept.translate(button_x - 30, button_y); // position the check mark
+
+        var accept_button = r.set(); // create a set to hold the checkmark and its background
+        accept_button.push(accept_background, accept);  // add the checkmark and the button
+
+        var reject_background = r.rect(0,0,30,30);
+        reject_background.attr("fill", "rgba(0,0,0,0)");    // fill color of the check mark
+        reject_background.attr("stroke", "rgba(0,0,0,0)");  // fill color of the check mark
+        reject_background.attr("cursor", "pointer");        // change the cursor while hovering
+        reject_background.translate(button_x, button_y);    // 
+
+        // draws an x cross
+        var reject = r.path("M24.778,21.419 19.276,15.917 24.777,10.415" +
+            " 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618," +
+            "15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z");
+        reject.attr("fill", "#ffffff");   // fill color of the cross
+        reject.attr("stroke", "#ffffff"); // stroke color of the cross
+        reject.attr("cursor", "pointer"); // change the cursor while hovering
+        reject.translate(button_x, button_y); // position the cross
+
+        var reject_button = r.set(); // create a set to hold the checkmark and its background
+        reject_button.push(reject_background, reject);  // add the checkmark and the button
 
         var set = r.set(); // create a set to hold the node and its text
         set.push(n, t);    // add the node and the text to the set
+        set.push(accept_button, reject_button); // add the buttons t
 
         nodes[id] = set; // store the node in an array
 
