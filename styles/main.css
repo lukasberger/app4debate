@@ -49,3 +49,8 @@ body {
     margin: 20px 15px;
     font-weight: 200;
 }
+
+.argument {
+    margin: 30px 15px 5px 15px;
+    font-size: 14px;
+}

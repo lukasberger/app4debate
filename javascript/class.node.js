@@ -103,12 +103,13 @@ var node = {
         accept_button.translate(button_x - 30, button_y); // position the check button
         reject_button.translate(button_x, button_y); // position the check button
 
-        set.translate(x, y);
-
         nodes[id] = set; // store the node in an array
+
+
 
         if (nodebase.child(id).child('votes').child(USER_ID) !== null) {
             node.minimize(id); // minimize the node at the beginning if voted already
+            node.move(id, x, y);
         }
 
 
@@ -121,7 +122,8 @@ var node = {
     },
     // move the given node to the given x, y coordinates
     move: function(id, x, y) {
-        nodes[id].animate({"x": x, "y": y}, 500, "ease-in");
+        nodes[id][0].animate({"x": x, "y": y}, 500, "ease-in");
+        nodes[id][1].animate({"x": x, "y": y}, 500, "ease-in");
 
         // fix for the button animations
 
@@ -147,14 +149,27 @@ var node = {
 
         nodes_by_status[status]++;
 
-        var move_x = status * 350 + 100 + nodes[id][0].attr("x");
+        var move_x = status * 350 + 100;
         var move_y = nodes_by_status[status] * 140 - 90;
-
-        console.log(nodes[id][0].attr("x") + " " + move_y);
 
         node.move(id, move_x, move_y);
 
 
+    },
+    moveOthers: function(status) {
+        
+        nodes_by_status[status] = 0;
+
+        for (var n in nodes) {
+            var color = this.getColorByStatus(status).background;
+
+            if (nodes[n][0].attr("fill") == color) {
+                nodes_by_status[status]++;
+                console.log(status * 350 + 100);
+                console.log(nodes_by_status[status] * 140 - 90);
+                this.move(n, status * 350 + 100, nodes_by_status[status] * 140 - 90);
+            }
+        }
     },
     // get the color of the node from the given status
     getColorByStatus: function(status) {
