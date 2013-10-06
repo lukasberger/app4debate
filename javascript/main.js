@@ -20,9 +20,16 @@ var NODE_RADIUS_MIN = 20;
 
 var NODE_TEXT_WIDTH = 35;
 
+var USER_ID; // the user's unique identifier
 
-var r;     // stores Raphael
-var nodes; // store the nodes
+
+// intitalize Firebase
+var data = new Firebase('https://app4debate.firebaseio.com/');
+
+var r;         // stores Raphael
+var nodes;     // store the displayed
+var node_data; // store data for the nodes
+
 
 window.onload = function() {
 
@@ -136,8 +143,21 @@ var node = {
     },
     // move the given node to the given x, y coordinates
     move: function(id, x, y) {
-        nodes[id].animate({"x": x, "y": y}, 2000, "ease-in");
-        nodes[id][3][1].animate({"transition": x+" "+y}, 2000, "ease-in");
+        nodes[id].animate({"x": x, "y": y}, 500, "ease-in");
+
+        // fix for the button animations
+
+        // get the paths of the button symbols
+        var path_check = nodes[id][2][1].attr("path").toString();
+        var path_x     = nodes[id][3][1].attr("path").toString();
+
+        // transform the paths by adding the translation
+        var check_transformed = Raphael.transformPath(path_check, "T" + x + "," + y);
+        var x_transformed = Raphael.transformPath(path_x, "T" + x + "," + y);
+
+        // animate the paths
+        nodes[id][2][1].animate({path: check_transformed}, 500, "ease-in");
+        nodes[id][3][1].animate({path: x_transformed}, 500, "ease-in");
 
     },
     // change the status of the node by changing its colors
@@ -204,6 +224,22 @@ var node = {
                 nodes[id][2].show().animate({"opacity": 100}, 200, "linear");
                 nodes[id][3].show().animate({"opacity": 100}, 200, "linear");
             });
-    }
+    },
+    // called if the user agrees on a point
+    agree: function(id, user_id) {
+
+        // TODO : notify firebase
+    },
+    // called if the user disagrees with a point
+    disagree: function(id, user_id) {
+
+        // TODO : notify firebase
+    },
+    // check status of the given node
+    checkStatus: function(id) {
+
+    },
+
+
 
 };
