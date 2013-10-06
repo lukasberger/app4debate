@@ -107,8 +107,6 @@ var node = {
 
         nodes[id] = set; // store the node in an array
 
-        console.log(id);
-
         if (nodebase.child(id).child('votes').child(USER_ID) !== null) {
             node.minimize(id); // minimize the node at the beginning if voted already
         }

@@ -6,13 +6,24 @@
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.12.0/build/cssreset/cssreset-min.css">
     <link rel="stylesheet" href="styles/main.css" type="text/css">
 
-    <script src="javascript/raphael-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="lib/javascript/raphael-min.js" type="text/javascript" charset="utf-8"></script>
     <script src='https://cdn.firebase.com/v0/firebase.js'></script>  
-    
+
+    <script src="javascript/main.js" type="text/javascript" charset="utf-8"></script>
     <script src="javascript/handlers.firebase.js" type="text/javascript" charset="utf-8"></script>
     <script src="javascript/class.node.js" type="text/javascript" charset="utf-8"></script>
     <script src="javascript/class.argument.js" type="text/javascript" charset="utf-8"></script>
-    <script src="javascript/main.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript">
+
+    window.onload = function() {
+        r = Raphael("nodes", screen.width, screen.height);
+        nodes = Array();
+        nodes_by_status = Array(0,0,0);
+    };
+
+    </script>
+
 </head>
 <body>
     <div id="nodes" class="nodes"></div>
