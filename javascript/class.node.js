@@ -118,8 +118,6 @@ var node = {
         nodes[id].remove();  // remove the node from the canvas
         nodes.splice(id, 1); // remove the element from the nodes array
 
-        // TODO: notify firebase
-
     },
     // move the given node to the given x, y coordinates
     move: function(id, x, y) {
@@ -146,6 +144,17 @@ var node = {
 
         nodes[id][0].attr("fill", colors["background"]); // node background
         nodes[id][0].attr("stroke", colors["border"]);   // node border
+
+        nodes_by_status[status]++;
+
+        var move_x = status * 350 + 100 + nodes[id][0].attr("x");
+        var move_y = nodes_by_status[status] * 140 - 90;
+
+        console.log(nodes[id][0].attr("x") + " " + move_y);
+
+        node.move(id, move_x, move_y);
+
+
     },
     // get the color of the node from the given status
     getColorByStatus: function(status) {

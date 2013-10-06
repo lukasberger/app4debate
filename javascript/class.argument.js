@@ -18,6 +18,10 @@ var argument = {
 
         argumentbase.push(a);
     },
+    // add a new user to the argument
+    addUser: function(id, user_id) {
+
+    },
     // add a new point to the discussion
     add: function(text) {
         var n = {};
