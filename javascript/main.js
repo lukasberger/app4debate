@@ -1,3 +1,5 @@
+var FIREBASE_URL = "https://app4debate.firebaseio.com";
+
 var NODE_AGREE                = 2;
 var NODE_AGREE_BACKGROUND     = "#2ecc71";
 var NODE_AGREE_BORDER         = "#27ae60";
@@ -20,36 +22,82 @@ var NODE_RADIUS_MIN = 20;
 
 var NODE_TEXT_WIDTH = 35;
 
-var USER_ID; // the user's unique identifier
-
+var USER_ID = 1; // the user's unique identifier
+var ARGUMENT_ID = "-J5BZ3i45H-7GVO5ZGiC"; // the argments unique identifier
 
 // intitalize Firebase
-var data = new Firebase('https://app4debate.firebaseio.com/');
+var argumentbase = new Firebase(FIREBASE_URL + '/arguments');
+var nodebase = new Firebase(FIREBASE_URL + '/arguments/' + ARGUMENT_ID + '/nodes');
 
 var r;         // stores Raphael
 var nodes;     // store the displayed
-var node_data; // store data for the nodes
+var nodes_by_status; // store the number of the nodes in a column based on status
+
+var gz;
+
+// -- HANDLERS FOR FIREBASE EVENTS --
+
+nodebase.on("child_added", function(snapshot) {
+    var n = snapshot.val();  // get the data of the new child
+    nodes_by_status[n.status]++; // keep track of the number of nodes with each status
+
+    // add the node to the site
+    node.add(snapshot.name(), status * 100, nodes_by_status[n.status] * 100, n.text, n.status);
+});
+
+nodebase.on("child_changed", function(snapshot) {
+    // since the node cannot be updated by user, assume vote change
+    var n = snapshot.val(); // get the updated data for the child
+    var a = Array(0,0,0);   // set up array to keep track of votes
+    var l = 0;              // length of the array
+
+    gz = n;
+
+    // go through the array and add up all the votes by status
+    for(var v in n.votes) {
+        a[n.votes[v]]++;   // update the number of votes for the status
+        l++;               // increment length by 1
+    }
+
+    // check all the votes for an absolute vote (all users voted the same)
+    for (var i = a.length - 1; i >= 0; i--) {
+        // if a vote is absolute, change the status of the node
+        console.log(a[i] + " " + l + " " + n.status);
+        if (a[i] === l && l > 0 && n.status !== i)  {
+            var noderef = new Firebase(FIREBASE_URL + '/arguments/' +
+                ARGUMENT_ID + '/nodes/' + snapshot.name());
+
+            noderef.child("status").set(i);
+            node.changeStatus(snapshot.name(), i);
+        }
+    }
+});
+
 
 
 window.onload = function() {
 
     r = Raphael("nodes", screen.width, screen.height);
     nodes = Array();
+    nodes_by_status = Array(0,0,0);
 
-    node.add(0,10,10,"This is a sample argument, I can have up to 140 characters." +
-        " In future, these arguments might also include #hashtags, and might" +
-        " integrate with Twitter.", 2);
+    // argument.add("This is a sample argument, I can have up to 140 characters." +
+    //     " In future, these arguments might also include #hashtags, and might" +
+    //     " integrate with Twitter.");
 
-    node.add(1,410,10,"Arguments may also be much shorter. I this case, the height" +
-        " of the node will automatically adapt.");
+    // argument.add("Arguments may also be much shorter. I this case, the height" +
+    //     " of the node will automatically adapt.");
 
-    node.add(2,810,10,"Arguments can also be VERY short.", 0);
+    // argument.add("Arguments can also be VERY short.");
+
 };
+
+
 
 var node = {
     // add a new node to the raphael canvas
     add: function(id, x, y, text, status) {
-        status = status === null ? 1 : status; // if status was not provided set status to 1
+        status = typeof status !== 'undefined' ? status : 1; // if status was not provided set status to 1
         var colors = this.getColorByStatus(status);
 
 
@@ -73,8 +121,8 @@ var node = {
 
         // --- Node ---
         var n = r.rect(0, 0, NODE_WIDTH, NODE_HEIGHT, NODE_RADIUS); // create the node
-        n.attr("fill",  colors["background"]); // node background color
-        n.attr("stroke",  colors["border"]);   // node border color
+        n.attr("fill",  colors.background); // node background color
+        n.attr("stroke",  colors.border);   // node border color
 
         // --- Text ---
         var t = r.text(0, 0, text_wrapped); // create the text element
@@ -128,9 +176,10 @@ var node = {
 
         set.translate(x, y);
 
+        console.log(id);
         nodes[id] = set; // store the node in an array
-
-        // TODO: notify firebase
+        console.log(nodes[id]);
+        node.minimize(id); // minimize the node at the beginning
 
     },
     // remove the node at the given id from both the canvas and the array
@@ -164,11 +213,8 @@ var node = {
     changeStatus: function(id, status) {
         colors = this.getColorByStatus(status);
 
-        nodes[id].attr("fill", colors["background"]); // node background
-        nodes[id].attr("stroke", colors["border"]);   // node border
-
-        // TODO: notify firebase
-
+        nodes[id][0].attr("fill", colors["background"]); // node background
+        nodes[id][0].attr("stroke", colors["border"]);   // node border
     },
     // get the color of the node from the given status
     getColorByStatus: function(status) {
@@ -239,7 +285,49 @@ var node = {
     checkStatus: function(id) {
 
     },
+};
 
+var argument = {
+    // intialize an empty arguemnt
+    initialize: function(subject) {
+        var a = {}; // create an empty object to store the arguments details
 
+        // get the current date
+        var date;
+        date = new Date();
+        date = date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2) + ' ' +
+            ('00' + date.getUTCHours()).slice(-2) + ':' +
+            ('00' + date.getUTCMinutes()).slice(-2) + ':' +
+            ('00' + date.getUTCSeconds()).slice(-2);
+        
+        a.subject = subject;
+        a.created = date;
 
+        argumentbase.push(a);
+    },
+    // add a new point to the discussion
+    add: function(text) {
+        var n = {};
+
+        n.user = USER_ID; // set the author's id
+        n.text = text;    // set the text of the node
+        n.status = NODE_UNDECIDED; // default status is undecided
+        n.votes = {};     // will store users' votes
+        n.votes[USER_ID] = NODE_UNDECIDED; // default vote is undecided
+
+        nodebase.push(n); // add the node to the nodes of current argument
+    },
+    // handles the vote function of the current user
+    vote: function(id, new_status) {
+        // get the reference point for the vote
+        var voteRef = new Firebase(FIREBASE_URL + "/arguments/" +
+            ARGUMENT_ID + "/nodes/" + id + "/votes");
+
+        var vote = {}; // create an object to store the vote
+        vote[USER_ID] = new_status; // assignt the new status to current user
+
+        voteRef.set(vote); // update the vote for current user
+    }
 };
