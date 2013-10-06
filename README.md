@@ -1,6 +1,7 @@
-App4Debate (AppForDebate, or A4D) is meant to be an application to allow a small group of friends to have productive discussions.
+APP4DEBATE
+==========
 
-A4D Team: Lukáš Berger (Northeastern University) Jonathan Chiu (Northeastern University) and Chrisantha Perera (MIT).
+App4Debate (AppForDebate, or A4D) is meant to be an application to allow a small group of friends to have productive discussions.
 
 In general, we intend it to be for groups of <10 people to discuss any topic using reason as a basis for discussion.
 We do not implement any logic; this software will currenty be user-curated. Future iterations may consider enforcing reasoning.
@@ -20,6 +21,4 @@ We can't help you there, the logic of this app has to come from you. We may trac
 
 
 This product was produced at HackMIT on October 5th and 6th 2013 at MIT. For a review of our technology, just ask us!
-Contact: chrisantha@alum.mit.edu, berger.lu@husky.neu.edu, chiu.j@husky.neu.edu
-
-Berger's in charge of coding and code base, Chiu is in charge of Design and UX, and Perera's in charge of Vision, Direction, and Integration
+Contact: chrisantha@alum.mit.edu, berger.lu@husky.neu.edu.
