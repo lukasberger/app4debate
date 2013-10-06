@@ -1,17 +1,51 @@
 body {
     height: 100%;
+    font-family: 'Lato';
 }
 
 .nodes {
     height: 100%;
     width: 100%;
-    background-color: #eee;
+    background-color: rgb(250,250,250);
     float: left;
 }
 
 .infobox {
-    height: 200px;
-    width: 300px;
-    background-color: #ddd;
-    float: right;
+    width: 280px;
+    background-color: #efefef;
+    box-shadow: 1px 1px #ddd;
+
+    position: absolute;
+    top: 40px; right: 40px;
+    z-index: 10;
+}
+
+.infobox-header {
+    font-size: 39px;
+    font-weight: 200;
+    text-transform: uppercase;
+    margin: 10px 15px 0 15px;
+}
+
+.infobox-subheader {
+    font-size: 14px;
+    margin: -5px 15px 0 15px;
+}
+
+.user-list {
+    margin: 15px 15px;
+}
+
+.user-list-item {
+    margin-top: 5px;
+}
+
+.text-input {
+    border: 1px solid #ddd;
+    font-size: 16px;
+    padding: 5px;
+    width: 250px;
+    height: 30px;
+    margin: 20px 15px;
+    font-weight: 200;
 }

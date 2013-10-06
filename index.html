@@ -1,13 +1,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>app4debate - reasoning platform for  argument</title>
+    <title>app4debate - reasoning platform for solid arguments</title>
 
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.12.0/build/cssreset/cssreset-min.css">
     <link rel="stylesheet" href="styles/main.css" type="text/css">
 
     <script src="lib/javascript/raphael-min.js" type="text/javascript" charset="utf-8"></script>
     <script src='https://cdn.firebase.com/v0/firebase.js'></script>  
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
 
     <script src="javascript/main.js" type="text/javascript" charset="utf-8"></script>
     <script src="javascript/handlers.firebase.js" type="text/javascript" charset="utf-8"></script>
@@ -20,13 +21,36 @@
         r = Raphael("nodes", screen.width, screen.height);
         nodes = Array();
         nodes_by_status = Array(0,0,0);
+
+
+        $("#argument-form").submit(function(e) {
+            if ($("#statement").val() != "") {
+                argument.add($("#statement").val());
+                $("#statement").val("");
+            }
+
+            e.preventDefault();
+        });  
     };
+
 
     </script>
 
 </head>
 <body>
     <div id="nodes" class="nodes"></div>
-    <div id="infobox" class="infobox"></div>
+    <div id="infobox" class="infobox">
+        <h1 class="infobox-header">app4debate<h1>
+        <h2 class="infobox-subheader">reasoning platform for solid arguments</h2> 
+
+        <ul class="user-list">
+            <li class="user-list-item">User 1</li>
+            <li class="user-list-item">User 2</li>
+        </ul>
+
+        <form id="argument-form">
+            <input class="text-input" id="statement" placeholder="Enter a statement and press enter">
+        </form>
+    </div>
 </body>
 </html>

@@ -26,7 +26,6 @@ var argument = {
         n.text = text;    // set the text of the node
         n.status = NODE_UNDECIDED; // default status is undecided
         n.votes = {};     // will store users' votes
-        n.votes[USER_ID] = NODE_UNDECIDED; // default vote is undecided
 
         nodebase.push(n); // add the node to the nodes of current argument
     },

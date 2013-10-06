@@ -22,7 +22,7 @@ var NODE_RADIUS_MIN = 20;
 
 var NODE_TEXT_WIDTH = 35;
 
-var USER_ID = 2; // the user's unique identifier
+var USER_ID = 1; // the user's unique identifier
 var ARGUMENT_ID = "-J5BZ3i45H-7GVO5ZGiC"; // the argments unique identifier
 
 

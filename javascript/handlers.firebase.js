@@ -3,7 +3,7 @@ nodebase.on("child_added", function(snapshot) {
     nodes_by_status[n.status]++; // keep track of the number of nodes with each status
 
     // add the node to the site
-    node.add(snapshot.name(), n.status * 100, nodes_by_status[n.status] * 100, n.text, n.status);
+    node.add(snapshot.name(), n.status * 350 + 100, nodes_by_status[n.status] * 140 - 90, n.text, n.status);
 });
 
 nodebase.on("child_changed", function(snapshot) {
@@ -17,7 +17,7 @@ nodebase.on("child_changed", function(snapshot) {
         a[n.votes[v]]++;   // update the number of votes for the status
         l++;               // increment length by 1
     }
-    
+
     if (l > 0 && (a[0] == l || a[1] == l || a[2] == l)) {
 
         if (a[0] == l && n.status !== 0) {
