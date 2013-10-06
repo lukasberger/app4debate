@@ -12,6 +12,11 @@ var NODE_DISAGREE_BORDER      = "#c0392b";
 
 var NODE_WIDTH  = 300;
 var NODE_HEIGHT = 110;
+var NODE_RADIUS = 10;
+
+var NODE_WIDTH_MIN  = 40;
+var NODE_HEIGHT_MIN = 40;
+var NODE_RADIUS_MIN = 20;
 
 var NODE_TEXT_WIDTH = 35;
 
@@ -24,36 +29,28 @@ window.onload = function() {
     r = Raphael("nodes", screen.width, screen.height);
     nodes = Array();
 
-    node.add(10,10,1,"This is a sample argument, I can have up to 140 characters." +
-        "In future, these arguments might also include #hashtags, and might" +
-        "integrate with Twitter.", 2);
+    node.add(0,10,10,"This is a sample argument, I can have up to 140 characters." +
+        " In future, these arguments might also include #hashtags, and might" +
+        " integrate with Twitter.", 2);
 
-    node.add(410,10,1,"This is a sample argument, I can have up to 140 characters." +
-        "In future, these arguments might also include #hashtags, and might" +
-        "integrate with Twitter.", 1);
+    node.add(1,410,10,"Arguments may also be much shorter. I this case, the height" +
+        " of the node will automatically adapt.");
 
-    node.add(810,10,1,"This is a sample argument, I can have up to 140 characters." +
-        "In future, these arguments might also include #hashtags, and might" +
-        "integrate with Twitter.", 0);
+    node.add(2,810,10,"Arguments can also be VERY short.", 0);
 };
 
 var node = {
     // add a new node to the raphael canvas
-    add: function(x, y, id, text, status) {
+    add: function(id, x, y, text, status) {
         status = status === null ? 1 : status; // if status was not provided set status to 1
         var colors = this.getColorByStatus(status);
 
-        // --- Node ---
 
-        var n = r.rect(x, y, NODE_WIDTH, NODE_HEIGHT, 5); // create the node
-        n.attr("fill",  colors["background"]); // node background color
-        n.attr("stroke",  colors["border"]);   // node border color
-
-        // --- Text ---
-
+        // --- Text Wrap ---
         var text_wrapped = ""; // the text wrapped at TEXT_WIDTH characters
-        var inword;  // is the pointer inside a word
-        var a = 0;   // is it time for another line break
+        var inword;    // is the pointer inside a word
+        var a = 0;     // number of characters on current line
+        var lines = 1; // number of lines the message spans
         for (var i = 0; i < text.length; i++, a++) {
             if (text[i] === " ") inword = false; // if the next character is a space, we are in a word
             else inword = true; // we are not in word
@@ -63,41 +60,46 @@ var node = {
             if (a >= NODE_TEXT_WIDTH && inword === false) {
                 text_wrapped += "\n";
                 a = 0;
+                lines++;
             }
         }
 
-        var t = r.text(x+25, y + (NODE_HEIGHT - 20) / 2, text_wrapped); // create the text element
+        // --- Node ---
+        var n = r.rect(0, 0, NODE_WIDTH, NODE_HEIGHT, NODE_RADIUS); // create the node
+        n.attr("fill",  colors["background"]); // node background color
+        n.attr("stroke",  colors["border"]);   // node border color
+
+        // --- Text ---
+        var t = r.text(0, 0, text_wrapped); // create the text element
         t.attr("font-size", 14);        // set text size
         t.attr("font-family", "Lato");  // set font
         t.attr("text-anchor", "start"); // set the anchor
         t.attr("fill", "#ffffff");      // set text color
+        t.translate(20, NODE_HEIGHT / 2 - 10);
 
         // --- Buttons ---
          
-        var button_x = x + NODE_WIDTH - 35;
-        var button_y = y + NODE_HEIGHT - 35;
+        var button_x = NODE_WIDTH - 35;
+        var button_y = NODE_HEIGHT - 35;
 
         var accept_background = r.rect(0,0,30,30);
         accept_background.attr("fill", "rgba(0,0,0,0)");     // fill color of the check mark
         accept_background.attr("stroke", "rgba(0,0,0,0)");     // fill color of the check mark
         accept_background.attr("cursor", "pointer");   // change the cursor while hovering
-        accept_background.translate(button_x - 30, button_y);
 
         var accept = r.path("M2.379,14.729 5.208,11.899 12.958,19.648" +
             " 25.877,6.733 28.707,9.561 12.958,25.308z"); // draws a check mark
         accept.attr("fill", "#ffffff");     // fill color of the check mark
         accept.attr("stroke", "#ffffff");   // border color of the check mark
         accept.attr("cursor", "pointer");   // change the cursor while hovering
-        accept.translate(button_x - 30, button_y); // position the check mark
 
         var accept_button = r.set(); // create a set to hold the checkmark and its background
         accept_button.push(accept_background, accept);  // add the checkmark and the button
 
         var reject_background = r.rect(0,0,30,30);
-        reject_background.attr("fill", "rgba(0,0,0,0)");    // fill color of the check mark
-        reject_background.attr("stroke", "rgba(0,0,0,0)");  // fill color of the check mark
+        reject_background.attr("fill", "rgba(0,0,0,0)");    // fill color of the x
+        reject_background.attr("stroke", "rgba(0,0,0,0)");  // fill color of the x
         reject_background.attr("cursor", "pointer");        // change the cursor while hovering
-        reject_background.translate(button_x, button_y);    // 
 
         // draws an x cross
         var reject = r.path("M24.778,21.419 19.276,15.917 24.777,10.415" +
@@ -106,7 +108,6 @@ var node = {
         reject.attr("fill", "#ffffff");   // fill color of the cross
         reject.attr("stroke", "#ffffff"); // stroke color of the cross
         reject.attr("cursor", "pointer"); // change the cursor while hovering
-        reject.translate(button_x, button_y); // position the cross
 
         var reject_button = r.set(); // create a set to hold the checkmark and its background
         reject_button.push(reject_background, reject);  // add the checkmark and the button
@@ -114,6 +115,11 @@ var node = {
         var set = r.set(); // create a set to hold the node and its text
         set.push(n, t);    // add the node and the text to the set
         set.push(accept_button, reject_button); // add the buttons t
+
+        accept_button.translate(button_x - 30, button_y); // position the check button
+        reject_button.translate(button_x, button_y); // position the check button
+
+        set.translate(x, y);
 
         nodes[id] = set; // store the node in an array
 
@@ -130,8 +136,9 @@ var node = {
     },
     // move the given node to the given x, y coordinates
     move: function(id, x, y) {
-        nodes[n].attr("x", x); // update the x coordinate
-        nodes[n].attr("y", y); // update the y coordinate
+        nodes[id].animate({"x": x, "y": y}, 2000, "ease-in");
+        nodes[id][3][1].animate({"transition": x+" "+y}, 2000, "ease-in");
+
     },
     // change the status of the node by changing its colors
     changeStatus: function(id, status) {
@@ -165,7 +172,38 @@ var node = {
         };
 
         return colors;
+    },
+    // minimize the node in to a circle
+    minimize: function(id) {
+        // hide the text
+        nodes[id][1].animate({"opacity": 0}, 200, "linear");
+        // hide the buttons
+        nodes[id][2].animate({"opacity": 0}, 200, "linear",
+            function() {
+                this.hide(); // make the button unclickable
+            });
+        nodes[id][3].animate({"opacity": 0}, 200, "linear", function() {
+            // make the button unclickable
+            this.hide();
+            // minimize the node
+            nodes[id][0].animate({"width": NODE_WIDTH_MIN,
+              "height": NODE_HEIGHT_MIN,
+              "r": NODE_RADIUS_MIN}, 300);
+        });
+    },
+    // maximize the given node
+    maximize: function(id) {
+        // maximize the node
+        nodes[id][0].animate({"width": NODE_WIDTH,
+            "height": NODE_HEIGHT,
+            "r": NODE_RADIUS}, 300,
+            "linear", function() {
+                // unhide the text
+                nodes[id][1].animate({"opacity": 100}, 200, "linear");
+                // unhide the buttons
+                nodes[id][2].show().animate({"opacity": 100}, 200, "linear");
+                nodes[id][3].show().animate({"opacity": 100}, 200, "linear");
+            });
     }
-
 
 };
